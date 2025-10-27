@@ -35,6 +35,25 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(ADMIN_CHAT_ID, adminNotification);
 });
 
+bot.onText(/\/reply (\d+) (.+)/, (msg, match) => {
+  const chatId = msg.chat.id;
+  
+  if (chatId.toString() !== ADMIN_CHAT_ID) {
+    return;
+  }
+  
+  const targetChatId = match[1];
+  const replyText = match[2];
+  
+  bot.sendMessage(targetChatId, `📬 Admin javob berdi:\n\n${replyText}`)
+    .then(() => {
+      bot.sendMessage(ADMIN_CHAT_ID, `✅ Javob yuborildi foydalanuvchiga (Chat ID: ${targetChatId})`);
+    })
+    .catch((error) => {
+      bot.sendMessage(ADMIN_CHAT_ID, `❌ Xatolik: ${error.message}`);
+    });
+});
+
 bot.on("message", (msg) => {
   if (msg.text && msg.text.startsWith("/")) {
     return;
@@ -60,7 +79,8 @@ bot.on("message", (msg) => {
   forwardMessage += `- Username: @${userName}\n`;
   forwardMessage += `- User ID: ${userId}\n`;
   forwardMessage += `- Chat ID: ${chatId}\n\n`;
-  forwardMessage += `💬 Xabar:\n${msg.text || "[Media fayl]"}`;
+  forwardMessage += `💬 Xabar:\n${msg.text || "[Media fayl]"}\n\n`;
+  forwardMessage += `📤 Javob berish uchun:\n/reply ${chatId} sizning javobingiz`;
 
   bot.sendMessage(ADMIN_CHAT_ID, forwardMessage);
 
