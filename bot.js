@@ -38,7 +38,7 @@ bot.onText(/\/start/, (msg) => {
 
   bot.sendMessage(
     chatId,
-    `Salom ${firstName}! 👋\n\nMen superadminga xabar yuboruvchi botman. Menga yozgan xabaringiz avtomatik ravishda admin ko'rib chiqishi uchun yuboriladi.\n\nXabaringizni yozing:`,
+    `Salom ${firstName}! 👋\n\nMen @vaunut egasiga xabar yuboruvchi botman. Menga yozgan xabaringiz avtomatik ravishda admin ko'rib chiqishi uchun yuboriladi.\n\nXabaringizni yozing:`,
   );
 
   const adminNotification = `🆕 Yangi foydalanuvchi bot bilan aloqaga chiqdi!\n\nIsm: ${firstName}\nUsername: @${msg.from.username || "username yo'q"}\nUser ID: ${msg.from.id}\nTil: ${msg.from.language_code || "noma'lum"}\n\n/start buyrug'ini yubordi`;
