@@ -9,6 +9,7 @@ Ushbu loyiha Telegram bot orqali yangi foydalanuvchilarning xabarlarini superadm
 - /start buyrug'i orqali yangi foydalanuvchilarni kutib oladi
 - Rasm, video, hujjat va boshqa media fayllarni ham yuboradi
 - Foydalanuvchiga xabar yuborilganini tasdiqlaydi
+- **Admin bot orqali foydalanuvchilarga javob berishi mumkin** (/reply buyrug'i)
 
 ## Texnologiyalar
 - **Backend**: Node.js
@@ -37,7 +38,14 @@ Bot ishlashi uchun quyidagi muhim sozlamalar kerak:
 1. Foydalanuvchi botga xabar yuboradi
 2. Bot xabarni qabul qiladi va foydalanuvchiga tasdiqlash xabarini yuboradi
 3. Bot xabarni foydalanuvchi ma'lumotlari bilan birga adminga yuboradi
-4. Admin barcha xabarlarni ko'radi va javob berishi mumkin
+4. Admin xabarni ko'radi va `/reply <chat_id> <javob>` buyrug'i orqali javob beradi
+5. Foydalanuvchi adminning javobini oladi
+
+### Admin javob berish namunasi:
+```
+/reply 123456789 Salom! Sizning savolingizga javob...
+```
+Bot avtomatik ravishda har bir xabar bilan javob berish uchun buyruqni ko'rsatadi.
 
 ## Loyiha tuzilishi
 ```
@@ -54,6 +62,7 @@ Bot ishlashi uchun quyidagi muhim sozlamalar kerak:
 - Node.js va node-telegram-bot-api o'rnatildi
 - Xabar yuborish funksiyasi qo'shildi
 - Media fayl yuborish qo'llab-quvvatlandi
+- Admin javob berish funksiyasi qo'shildi (/reply buyrug'i)
 
 ## Foydalanuvchi sozlamalari
 - Til: O'zbekcha
