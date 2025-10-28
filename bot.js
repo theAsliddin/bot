@@ -39,16 +39,14 @@ bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const firstName = msg.from.first_name || "Foydalanuvchi";
 
-  bot.sendMessage(
+bot.sendMessage(
     chatId,
-    `Salom ${firstName}! 👋\n\nMen @vaunut egasiga xabar yuboruvchi botman. Menga yozgan xabaringiz avtomatik ravishda admin ko'rib chiqishi uchun yuboriladi.\n\nXabaringizni yozing:`
+    `Salom ${firstName}! 👋\n\nMen @vaunut egasiga xabar yuboruvchi botman. \n\nXabaringizni yozing:`
   );
 
   bot.sendMessage(
     ADMIN_CHAT_ID,
-    `🆕 Yangi foydalanuvchi bot bilan bog‘landi:\n👤 ${firstName}\n@${
-      msg.from.username || "username yo‘q"
-    }\n🆔 ${msg.from.id}`
+    `🆕 Yangi foydalanuvchi bot bilan bog‘landi:\n👤 ${firstName}\n@${msg.from.username || "username yo‘q"}\n🆔 ${msg.from.id}`
   );
 });
 
@@ -87,15 +85,13 @@ bot.on("message", (msg) => {
   // Admin bo‘lgan foydalanuvchidan kelgan xabarni qayta ishlash
   if (chatId.toString() === ADMIN_CHAT_ID) return;
 
-  // Xabarga reply qilish
+  // Foydalanuvchidan kelgan xabarga reply qilish
   bot.sendMessage(
     chatId,
     `✅ Xabaringiz admin tomonidan qabul qilindi! Sizning xabaringizga admin tez orada javob beradi.`
   );
 
-  let forwardText = `📩 Yangi xabar!\n\n👤 ${firstName}\n@${userName}\n🆔 ${userId}\n💬 ${
-    msg.text || "[Media]"
-  }\n\n/reply ${chatId} <javob>`;
+  let forwardText = `📩 Yangi xabar!\n\n👤 ${firstName}\n@${userName}\n🆔 ${userId}\n💬 ${msg.text || "[Media]"}\n\n/reply ${chatId} <javob>`;
   bot.sendMessage(ADMIN_CHAT_ID, forwardText).then((sentMsg) => {
     addToMessageMap(sentMsg.message_id, {
       chatId,
@@ -119,9 +115,23 @@ bot.on("message", (msg) => {
       });
   }
 
-  // Kelgan xabarga reply qilish (javobni yuborish)
-  bot.sendMessage(chatId, `📬 Admin sizning xabaringizga javob berdi:`);
-  bot.sendMessage(chatId, `📬 Admin: "${msg.text || "[Media]"}"`);
+  // Kelgan xabarga reply qilish (admin javobini yuborish)
+  if (msg.text) {
+    bot.sendMessage(chatId, `📬 Admin: "${msg.text}"`);
+  } else if (msg.photo) {
+    const photo = msg.photo[msg.photo.length - 1].file_id;
+    bot.sendPhoto(chatId, photo, {
+      caption: msg.caption || "📬 Admin javobi:",
+    });
+  } else if (msg.document) {
+    bot.sendDocument(chatId, msg.document.file_id, {
+      caption: msg.caption || "📬 Admin javobi:",
+    });
+  } else if (msg.video) {
+    bot.sendVideo(chatId, msg.video.file_id, {
+      caption: msg.caption || "📬 Admin javobi:",
+    });
+  }
 });
 
 // Railway server porti (majburiy)
