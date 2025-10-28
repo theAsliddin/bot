@@ -1,21 +1,36 @@
 {
-  "name": "telegram-bot-superadmin",
+  "name": "telegram-bot",
   "version": "1.0.0",
-  "description": "Telegram bot that forwards new user messages to superadmin",
+  "description": "Telegram bot deployed on Railway",
   "main": "bot.js",
   "scripts": {
-    "start": "node bot.js",
-    "build": "node bot.js"
+    "start": "node bot.js"
   },
-  "keywords": [
-    "telegram",
-    "bot",
-    "nodejs"
-  ],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.6.1",
-    "node-telegram-bot-api": "^0.66.0"
+    "node-telegram-bot-api": "^0.61.0",
+    "express": "^4.19.2"
   }
 }
+
+
+// {
+//   "name": "telegram-bot-superadmin",
+//   "version": "1.0.0",
+//   "description": "Telegram bot that forwards new user messages to superadmin",
+//   "main": "bot.js",
+//   "scripts": {
+//     "start": "node bot.js",
+//     "build": "node bot.js"
+//   },
+//   "keywords": [
+//     "telegram",
+//     "bot",
+//     "nodejs"
+//   ],
+//   "author": "",
+//   "license": "ISC",
+//   "dependencies": {
+//     "dotenv": "^16.6.1",
+//     "node-telegram-bot-api": "^0.66.0"
+//   }
+// }
