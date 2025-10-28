@@ -1,50 +1,123 @@
-// === Import kutubxonalar ===
 const TelegramBot = require("node-telegram-bot-api");
 const express = require("express");
+
 const app = express();
 
-// === Muhit o‘zgaruvchilari ===
-const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-if (!TOKEN) {
-  console.error("❌ TELEGRAM_BOT_TOKEN muhit o‘zgaruvchisida topilmadi!");
+// Muhit o'zgaruvchilari
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
+
+if (!BOT_TOKEN) {
+  console.error("❌ TELEGRAM_BOT_TOKEN topilmadi!");
   process.exit(1);
 }
 
-// === Botni webhook yoki polling orqali ishga tushirish ===
-// Railway doimiy server, shuning uchun long polling ishlatish qulay:
-const bot = new TelegramBot(TOKEN, { polling: true });
+if (!ADMIN_CHAT_ID) {
+  console.error("❌ ADMIN_CHAT_ID topilmadi!");
+  process.exit(1);
+}
 
-// === Bot buyruqlari ===
+// Botni ishga tushiramiz
+const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+
+const messageMap = new Map();
+const MAX_MESSAGE_MAP_SIZE = 1000;
+
+function addToMessageMap(messageId, data) {
+  if (messageMap.size >= MAX_MESSAGE_MAP_SIZE) {
+    const firstKey = messageMap.keys().next().value;
+    messageMap.delete(firstKey);
+  }
+  messageMap.set(messageId, data);
+}
+
+console.log("🤖 Bot ishga tushdi!");
+console.log(`📨 Barcha xabarlar admin (${ADMIN_CHAT_ID})ga yuboriladi.`);
+
+// /start buyrug‘i
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
+  const firstName = msg.from.first_name || "Foydalanuvchi";
+
   bot.sendMessage(
     chatId,
-    "👋 Salom! Men Railway’da ishlaydigan Telegram botman.\n\nBuyruqlar:\n/start - Boshlash\n/help - Yordam"
+    `Salom ${firstName}! 👋\n\nMen admin bilan bog‘lovchi botman. Menga yozgan xabaringiz adminga yuboriladi.`
+  );
+
+  bot.sendMessage(
+    ADMIN_CHAT_ID,
+    `🆕 Yangi foydalanuvchi bot bilan bog‘landi:\n👤 ${firstName}\n@${msg.from.username || "username yo‘q"}\n🆔 ${msg.from.id}`
   );
 });
 
-bot.onText(/\/help/, (msg) => {
-  bot.sendMessage(msg.chat.id, "🧭 Bu bot test maqsadida Railway’da ishlamoqda.");
+// Adminning /reply buyrug‘i
+bot.onText(/\/reply (\d+) (.+)/s, (msg, match) => {
+  if (msg.chat.id.toString() !== ADMIN_CHAT_ID) return;
+
+  const targetChatId = parseInt(match[1]);
+  const replyText = match[2];
+
+  bot
+    .sendMessage(targetChatId, `📬 Admin javob berdi:\n\n${replyText}`)
+    .then(() =>
+      bot.sendMessage(
+        ADMIN_CHAT_ID,
+        `✅ Javob yuborildi foydalanuvchiga (Chat ID: ${targetChatId})`
+      )
+    )
+    .catch((error) =>
+      bot.sendMessage(
+        ADMIN_CHAT_ID,
+        `❌ Xatolik: ${error.message}\nChat ID: ${targetChatId}`
+      )
+    );
 });
 
-// === Oddiy matnlarga javob ===
+// Oddiy xabarlarni qayta ishlash
 bot.on("message", (msg) => {
-  const text = msg.text;
-  const chatId = msg.chat.id;
+  if (msg.text && msg.text.startsWith("/")) return;
 
-  if (!text.startsWith("/")) {
-    bot.sendMessage(chatId, `Siz yozdingiz: ${text}`);
+  const chatId = msg.chat.id;
+  const userId = msg.from.id;
+  const firstName = msg.from.first_name || "User";
+  const userName = msg.from.username || "username yo‘q";
+
+  if (chatId.toString() === ADMIN_CHAT_ID) return;
+
+  bot.sendMessage(
+    chatId,
+    "✅ Xabaringiz adminga yuborildi. Tez orada javob olasiz!"
+  );
+
+  let forwardText = `📩 Yangi xabar!\n\n👤 ${firstName}\n@${userName}\n🆔 ${userId}\n💬 ${msg.text || "[Media]"}\n\n/reply ${chatId} <javob>`;
+  bot.sendMessage(ADMIN_CHAT_ID, forwardText).then((sentMsg) => {
+    addToMessageMap(sentMsg.message_id, {
+      chatId,
+      messageId: msg.message_id,
+      firstName,
+      userName,
+    });
+  });
+
+  if (msg.photo || msg.document || msg.video || msg.voice) {
+    bot.forwardMessage(ADMIN_CHAT_ID, chatId, msg.message_id).then((sentMsg) =>
+      addToMessageMap(sentMsg.message_id, {
+        chatId,
+        messageId: msg.message_id,
+        firstName,
+        userName,
+      })
+    );
   }
 });
 
-// === Express server (Railway uchun kerak) ===
+// Railway server porti (majburiy)
 app.get("/", (req, res) => {
-  res.send("✅ Telegram bot Railway’da ishlayapti!");
+  res.send("✅ Bot Railway’da ishlayapti!");
 });
 
-// Railway server porti (Railway avtomatik PORT o‘zgaruvchisini beradi)
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server ${PORT}-portda ishga tushdi`));
+app.listen(PORT, () => console.log(`🌐 Server ${PORT}-portda ishga tushdi`));
 
 
 // require("dotenv").config();

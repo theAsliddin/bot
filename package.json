@@ -1,7 +1,7 @@
 {
-  "name": "telegram-bot",
+  "name": "telegram-forward-bot",
   "version": "1.0.0",
-  "description": "Telegram bot deployed on Railway",
+  "description": "Foydalanuvchi va admin o‘rtasidagi xabar almashish uchun Telegram bot",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
