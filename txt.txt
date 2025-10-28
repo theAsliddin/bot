@@ -1,0 +1,22 @@
+
+// {
+//   "name": "telegram-bot-superadmin",
+//   "version": "1.0.0",
+//   "description": "Telegram bot that forwards new user messages to superadmin",
+//   "main": "bot.js",
+//   "scripts": {
+//     "start": "node bot.js",
+//     "build": "node bot.js"
+//   },
+//   "keywords": [
+//     "telegram",
+//     "bot",
+//     "nodejs"
+//   ],
+//   "author": "",
+//   "license": "ISC",
+//   "dependencies": {
+//     "dotenv": "^16.6.1",
+//     "node-telegram-bot-api": "^0.66.0"
+//   }
+// }
